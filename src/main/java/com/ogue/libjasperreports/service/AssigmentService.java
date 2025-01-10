@@ -1,6 +1,6 @@
 package com.ogue.libjasperreports.service;
 
-import com.ogue.libjasperreports.common.strategy.ReportStrategyContext;
+import com.ogue.strategy.ReportStrategyContext;
 import com.ogue.libjasperreports.model.Assigment;
 import com.ogue.libjasperreports.model.DatosCarga;
 import com.ogue.libjasperreports.model.DatosEmpresa;
