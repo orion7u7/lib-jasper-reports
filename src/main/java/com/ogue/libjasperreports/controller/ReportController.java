@@ -2,9 +2,11 @@ package com.ogue.libjasperreports.controller;
 
 
 import com.ogue.libjasperreports.common.LoadFiles;
+import com.ogue.strategy.ReportStrategy;
 import com.ogue.strategy.ReportStrategyContext;
 import com.ogue.libjasperreports.mock.AssigmentMock;
 import com.ogue.libjasperreports.service.AssigmentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,12 +19,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/reports")
 public class ReportController {
-    private ReportStrategyContext reportStrategyContext;
+
+    private final ReportStrategy reportStrategy;
+
+    //private final ReportStrategyContext reportStrategyContext = new ReportStrategyContext();
     private final LoadFiles loadFiles;
     private final AssigmentService assigmentService;
 
 
-    public ReportController(LoadFiles loadFiles, AssigmentService assigmentService) {
+    public ReportController( ReportStrategy reportStrategy,LoadFiles loadFiles, AssigmentService assigmentService) {
+        this.reportStrategy = reportStrategy;
         this.loadFiles = loadFiles;
         this.assigmentService = assigmentService;
     }
@@ -33,7 +39,7 @@ public class ReportController {
 
             String templateName = loadFiles.load().get(reportType);
 
-            byte[] report = reportStrategyContext.generateReport(templateName, assigmentService.createAssigment(AssigmentMock.assigmentMock()));
+            byte[] report = reportStrategy.generateReport(templateName, assigmentService.createAssigment(AssigmentMock.assigmentMock()));
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
