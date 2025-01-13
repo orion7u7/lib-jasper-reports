@@ -36,11 +36,9 @@ public class ReportController {
     @GetMapping("/{reportType}")
     public ResponseEntity<byte[]> generateReport(@PathVariable() String reportType) {
         try {
-
             String templateName = loadFiles.load().get(reportType);
 
             byte[] report = reportStrategy.generateReport(templateName, assigmentService.createAssigment(AssigmentMock.assigmentMock()));
-
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("inline", reportType + ".pdf");
