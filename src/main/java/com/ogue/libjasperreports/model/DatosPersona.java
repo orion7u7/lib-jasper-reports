@@ -13,15 +13,15 @@ public class DatosPersona {
     private String rutpersona;
     private String dvpersona;
     private String nombre;
-    private String apPaterno;
-    private String apMaterno;
+    private String ap_paterno;
+    private String ap_materno;
     private String domicilio;
     private String comuna;
     private String ciudad;
     private String region;
-    private String fonoFijo;
-    private String fonoCel;
+    private String fono_fijo;
+    private String fono_cel;
     private String email;
-    private String fechaIniCont;
-    private String fechaTerCont;
+    private String fecha_ini_cont;
+    private String fecha_ter_cont;
 }

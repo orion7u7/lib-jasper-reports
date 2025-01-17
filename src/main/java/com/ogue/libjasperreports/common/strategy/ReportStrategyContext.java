@@ -1,42 +1,45 @@
 package com.ogue.libjasperreports.common.strategy;
 
-import com.ogue.libjasperreports.common.LoadFiles;
 import net.sf.jasperreports.engine.*;
-import org.springframework.stereotype.Service;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
-@Service
 public class ReportStrategyContext implements ReportStrategy {
 
-    private final LoadFiles loadFiles;
-
-    public ReportStrategyContext(LoadFiles loadFiles) {
-        this.loadFiles = loadFiles;
-    }
 
     @Override
     public byte[] generateReport(String reportType, Map<String, Object> params) throws JRException {
         try {
-            String templateName = loadFiles.load().get(reportType);
-
-            if (templateName == null) {
-                throw new IllegalArgumentException("No template found for report type: " + reportType);
-            }
-
-            InputStream reportStream = this.getClass().getResourceAsStream("/reports/" + templateName);
+            InputStream reportStream = this.getClass().getResourceAsStream("/reports/" + reportType);
             if (reportStream == null) {
-                throw new IllegalArgumentException("Template file not found: " + templateName);
+                throw new IllegalArgumentException("Template file not found: " + reportType);
             }
-
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(reportStream, params, new JREmptyDataSource());
             return JasperExportManager.exportReportToPdf(jasperPrint);
-        } catch (Exception e) {
+        } catch (JRException e) {
             throw new JRException("Error al generar el reporte", e);
         }
-
     }
 
+    @Override
+    public byte[] combineReports(List<byte[]> reports) throws IOException {
+        PDFMergerUtility pdfMerger = new PDFMergerUtility();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        for (byte[] report : reports) {
+            pdfMerger.addSource(new ByteArrayInputStream(report));
+        }
+        pdfMerger.setDestinationStream(outputStream);
+        pdfMerger.mergeDocuments(null);
+
+        return outputStream.toByteArray();
+    }
 }

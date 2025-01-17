@@ -1,42 +1,41 @@
 package com.ogue.libjasperreports.controller;
 
 
-import com.ogue.libjasperreports.common.strategy.ReportStrategyContext;
-import com.ogue.libjasperreports.mock.AssigmentMock;
+import com.ogue.libjasperreports.common.LoadFiles;
+import com.ogue.libjasperreports.model.Assigment;
 import com.ogue.libjasperreports.service.AssigmentService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 @RestController
-@RequestMapping("/api/reports")
+@RequestMapping("/asignaciones-familiares/v1/solicitudes")
 public class ReportController {
 
 
-    private final ReportStrategyContext reportStrategyContext;
+    private final LoadFiles loadFilesConfig;
     private final AssigmentService assigmentService;
 
-
-    public ReportController(ReportStrategyContext reportStrategyContext, AssigmentService assigmentService) {
-        this.reportStrategyContext = reportStrategyContext;
+    public ReportController(LoadFiles loadFilesConfig, AssigmentService assigmentService) {
+        this.loadFilesConfig = loadFilesConfig;
         this.assigmentService = assigmentService;
     }
 
-    @GetMapping("/{reportType}")
-    public ResponseEntity<byte[]> generateReport(@PathVariable() String reportType) {
+    @PostMapping("/procesar")
+    public ResponseEntity<byte[]> generateReport(@RequestBody Assigment body) {
         try {
+            String templateName = loadFilesConfig.load().get("reporte1");
+            if (templateName == null || templateName.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            }
 
-
-            byte[] report = reportStrategyContext.generateReport(reportType, assigmentService.createAssigment(AssigmentMock.assigmentMock()));
-
+            byte[] report = assigmentService.createAssigment(templateName,body);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData("inline", reportType + ".pdf");
+            headers.setContentDispositionFormData("inline", "Cert_AFyMAT_Pg1" + ".pdf");
 
             return new ResponseEntity<>(report, headers, HttpStatus.OK);
         } catch (Exception e) {

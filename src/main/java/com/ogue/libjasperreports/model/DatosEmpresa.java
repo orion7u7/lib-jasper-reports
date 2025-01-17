@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 public class DatosEmpresa {
     private String rutempresa;
     private String dvempresa;
-    private String razonSoc;
+    private String razon_soc;
     private String domicilio;
     private String comuna;
     private String ciudad;
     private String region;
-    private String fonoFijo;
-    private String fonoCel;
+    private String fono_fijo;
+    private String fono_cel;
     private String email;
 }
